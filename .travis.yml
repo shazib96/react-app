@@ -1,0 +1,23 @@
+# telling travis to give sudo access to docker
+sudo: required
+
+# telling travis to copy of docker running into container
+services:
+  - docker
+
+# tell travis before running test/deployment project, build our Dockerfile.dev with tag
+before_install:
+  - docker build -t shazib/react-app -f Dockerfile.dev .
+
+script:
+  - docker run -e CI=true shazib/react-app npm run test
+
+deploy:
+  provider: elasticbeanstalk
+  region: "us-west-2"
+  app: "docker"
+  env: "Docker-env"
+  bucket_name: "elasticbeanstalk-us-west-2-306476627547"
+  bucket_path: "docker"
+  on:
+    branch: master
